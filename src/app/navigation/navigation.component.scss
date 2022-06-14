@@ -1,0 +1,26 @@
+.navbar {
+  grid-column: 1/2;
+  height: 100%;
+}
+
+.navbar_list {
+  margin: 0;
+  padding: 0;
+  background-color: #A5BECC;
+  height: 100%;
+}
+
+.navbar_listitem {
+  list-style-type: none;
+  padding: 10px 20px;
+  font-size: 20px;
+}
+
+.navbar_link {
+  text-decoration: none;
+  color: rgb(61, 42, 42);
+}
+
+.active {
+  color: white;
+}
