@@ -1,0 +1,24 @@
+<div class="tags">
+  <label class="tags-label" for="tags">Tag:</label>
+
+  <select class="tag-select" name="tags" id="tags" [formControl]="select" [value]="any">
+    <option value="any" checked>Any</option>
+    <option *ngFor="let tag of noteTagsKeys" [ngValue]="tag">{{tag}}</option>
+  </select>
+
+  <button class="tag-button" (click)="filterNotes()">Filter</button>
+</div>
+
+<div class="notes-wrapper">
+  <div class="note" *ngFor="let note of notesForPage" >
+    <button class="delete-button" (click)="deleteNote(note)">x</button>
+    <p class="note_title">Title: {{note.title}}</p>
+    <p class="note_text">{{note.text}}</p>
+    <p class="note_tags">Tags: <span *ngFor="let tag of note.allTags" class="tag">#{{tag}}</span></p>
+
+    <button [routerLink]="'/edit/'+note.id" class="edit-button">Edit</button>
+  </div>
+</div>
+
+
+
