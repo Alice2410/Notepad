@@ -1,0 +1,29 @@
+<div class="note">
+
+  <form class="note_form" [formGroup]="noteForm">
+    <div class="form-group">
+      <label for="noteName" class="label">Title:</label>
+      <input id="noteName" class="input_title" type="text" formControlName="title" placeholder="Note title" name="b" #title>
+    </div>
+
+    <div class="form-group">
+      <label for="noteContent" class="label">Note: </label>
+      <textarea id="noteContent" class="input_text" formControlName="text" name="a" cols="30" rows="10" #text></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="noteTags" class="label">Tags: </label>
+      <input id="noteTags" class="input_tags"  formControlName="tag" name="tag" type="text">
+
+      <button (click)="addTag()" class="tag-button">Save tag</button>
+      <button (click)="reset('allTags')" class="tag-button">Reset tags</button>
+
+      <textarea type="text" name="allTags"  formControlName="allTags" class="notetags"></textarea>
+    </div>
+
+    <div class="note_button-wrapper">
+      <button class="note_button fixed-width-button" [disabled]="noteForm.invalid" (click)="saveNote()">Save</button>
+      <button class="note_reset note_button fixed-width-button" (click)="reset('title', 'text', 'tag', 'allTags')">Reset</button>
+    </div>
+  </form>
+</div>
