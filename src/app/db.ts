@@ -6,14 +6,7 @@ export interface Note {
   key?: string;
 }
  
-export const notes: Note[] = [
-  // {
-  //   title: 'title',
-  //   text: 'some text',
-  //   allTags: ['tag'],
-  //   id: 0,
-  // }
-];
+export const notes: Note[] = [];
 
 export const deletedNotes: Note[] = [];
 

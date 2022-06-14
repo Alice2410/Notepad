@@ -95,6 +95,7 @@ export class EditNoteComponent implements OnInit {
     }
     
     notes.push(this.editedNote!);
+    
     this.editedNote = undefined;
     this.reset(...Object.values(controlsNames))
     setTimeout(() => {
