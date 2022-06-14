@@ -1,0 +1,14 @@
+<div class="notes-wrapper">
+  <div class="note" *ngFor="let note of notes" >
+    <p class="note_title">Title: {{note.title}}</p>
+    <p class="note_text">{{note.text}}</p>
+    <p class="note_tags">Tags: <span *ngFor="let tag of note.allTags" class="tag">#{{tag}}</span></p>
+
+    <div class="note_button-wrapper">
+      <button class="note_button" (click)="restore(note)">Restore</button>
+      <button class="note_button" (click)="permDelete(note)">Permanently delete</button>
+    </div>
+  </div>
+</div>
+
+
