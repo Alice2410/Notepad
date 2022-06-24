@@ -56,10 +56,11 @@ export class CreateNoteComponent {
   }
 
   reset(...args: string[]): void {
-    args.forEach((inputName) => {
+    for( let inputName of args ) {
       this.getControl(inputName).setValue('');
-      this.tags = [];
-    })
+    }
+
+    this.tags = [];
   }
 
   saveNote(): void {
@@ -76,16 +77,23 @@ export class CreateNoteComponent {
   }
 
   addTagsToDB(tags: string[]): void {
-    tags.forEach((tag) => {
-      console.log(tag);
-      
+    for (let tag of tags ) {
       if(noteTags.has(tag)) {
         let number = noteTags.get(tag) as number + 1;
         let newTag = noteTags.set(tag, number);  
       } else {
         let newTag = noteTags.set(tag, 1);
       }
-    })
+    }
+
+    // tags.forEach((tag) => {
+    //   if(noteTags.has(tag)) {
+    //     let number = noteTags.get(tag) as number + 1;
+    //     let newTag = noteTags.set(tag, number);  
+    //   } else {
+    //     let newTag = noteTags.set(tag, 1);
+    //   }
+    // })
     
   }
 

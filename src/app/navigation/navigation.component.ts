@@ -24,8 +24,8 @@ export class NavigationComponent implements OnInit {
       id: 'deleted',
     },
     {
-      name: 'Crange',
-      id: 'crange'
+      name: 'ToDo',
+      id: 'todo'
     }
   ]
   constructor() { }

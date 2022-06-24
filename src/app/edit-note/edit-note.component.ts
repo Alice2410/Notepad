@@ -13,15 +13,12 @@ import {Router} from "@angular/router"
   templateUrl: './edit-note.component.html',
   styleUrls: ['./edit-note.component.scss']
 })
-
 export class EditNoteComponent implements OnInit {
-  tags: string[] = [];
+  editedNoteTagsArr: string[] = [];
   editedNote: Note | undefined;
-  tagsString: string = '';
-  // noteId: number = 0;
-  initialTagsValue: string = '';
-
-  editNoteForm = this.fb.group({
+  initialTagsString: string = '';
+  
+  editNoteForm = this.formBuilder.group({
     title: ['', [
       Validators.required,
       Validators.pattern('^[a-zA-Z0-9][a-zA-Z0-9 .,!()]*')
@@ -37,31 +34,61 @@ export class EditNoteComponent implements OnInit {
   });
 
   constructor(
-    private fb: FormBuilder, 
-    private fo: FormOperationsService,
+    private formBuilder: FormBuilder, 
+    private formOperations: FormOperationsService,
     private route: ActivatedRoute,
     private arrOperations: ArrayOperationsService,
     private router: Router,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const noteId = this.getID(); 
-    this.editedNote = this.findNoteById(noteId);   
-    this.tags = this.editedNote.allTags; // зачем? передаю изначальное значение массива тэгов
+    this.editedNote = this.findNoteById(noteId);  
+    const tagsString = this.makeTagsString(); 
+    this.editedNoteTagsArr = this.editedNote.allTags; 
     
-    this.fo.getControl(this.editNoteForm, controlsNames.title).setValue(this.editedNote.title);
-    this.fo.getControl(this.editNoteForm, controlsNames.text).setValue(this.editedNote.text);
+    this.formOperations.getControl(this.editNoteForm, controlsNames.title).setValue(this.editedNote.title);
+    this.formOperations.getControl(this.editNoteForm, controlsNames.text).setValue(this.editedNote.text);
+    this.formOperations.getControl(this.editNoteForm, controlsNames.allTags).setValue(tagsString);
+  }
 
-    this.editedNote.allTags.forEach((tag) => {
-      if(tag) {
-        this.tagsString = this.tagsString + `#${tag} ` //составляет строку из тегов
-      }
-    });
+  saveEdit(): void { 
+    this.arrOperations.splice(this.editedNote, notes);
 
-    this.tagsString.trim();
+    if(this.editedNote){
+      const newTags: string = this.formOperations.getControl(this.editNoteForm, 'allTags').value;
+      this.editedNote.allTags = this.makeTagsArr(newTags);
 
-    this.fo.getControl(this.editNoteForm, controlsNames.allTags).setValue(this.tagsString);// помещает значение в allTags 
-    this.initialTagsValue = this.tagsString;// сохрвняет его для использования в checkTags()
+      Object.values(controlsNames).forEach((item) => {
+        const control = this.formOperations.getControl(this.editNoteForm, item);
+        const key = item as keyof Note;
+        
+        if(control.dirty) {
+          (this.editedNote as unknown as Record<typeof key, typeof key>)[key] = control.value;
+        }
+      });    
+
+      this.deleteOldTags()
+      this.setNewTags(this.editedNote.allTags);
+    }
+    
+    notes.push(this.editedNote!);
+    this.reset(...Object.values(controlsNames));
+    this.editedNote = undefined;
+    setTimeout(() => { this.router.navigate(['/my-notes']) }, 1000);
+  }
+
+  addNewTag(): void {
+    const tagValue = this.formOperations.getControl(this.editNoteForm, controlsNames.tag).value;
+    const allTags = this.formOperations.getControl(this.editNoteForm, controlsNames.allTags);
+    const tagStatus = this.formOperations.getControl(this.editNoteForm, controlsNames.tag).status;
+    
+    if(tagValue.length > 0 && tagStatus === 'VALID' && this.editedNoteTagsArr.indexOf(tagValue) === -1) {
+      this.editedNoteTagsArr.push(`${tagValue}`);
+      allTags.setValue(allTags.value.trim() + ` #${tagValue}`);
+    }
+
+    this.formOperations.getControl(this.editNoteForm, controlsNames.tag).setValue('');
   }
 
   getID(): number {
@@ -78,95 +105,52 @@ export class EditNoteComponent implements OnInit {
     })[0];
   }
 
-  saveEdit(): void {  
-    this.arrOperations.splice(this.editedNote, notes);
-
-    if(this.editedNote) {
-      Object.values(controlsNames).forEach((item) => {
-        console.log(item, this.fo.getControl(this.editNoteForm, item).dirty);
-
-        if(this.fo.getControl(this.editNoteForm, item).dirty) {
-          const key = item as keyof Note;
-          (this.editedNote as unknown as Record<typeof key, typeof key>)[key] = this.fo.getControl(this.editNoteForm, item).value;
-        }
-      });
-     
-      this.editedNote.allTags = this.checkTags();      
-    }
-    
-    notes.push(this.editedNote!);
-    this.editedNote = undefined;
-    this.reset(...Object.values(controlsNames))
-    setTimeout(() => {
-      this.router.navigate(['/my-notes'])
-    }, 2000)
-    
-  }
-
-  addTag(): void {
-    const tagValue = this.fo.getControl(this.editNoteForm, controlsNames.tag).value;
-    const allTags = this.fo.getControl(this.editNoteForm, controlsNames.allTags);
-    const tagStatus = this.fo.getControl(this.editNoteForm, controlsNames.tag).status;
-    
-    if(tagValue.length > 0 && tagStatus === 'VALID' && this.tags.indexOf(tagValue) === -1) {
-      this.tags.push(`${tagValue}`);
-      allTags.setValue(allTags.value.trim() + ` #${tagValue}`);
-    }
-
-    this.fo.getControl(this.editNoteForm, controlsNames.tag).setValue('');
-  }
-
   reset(...args: string[]): void {
     args.forEach((inputName) => {
-      this.fo.getControl(this.editNoteForm, inputName).setValue('');
-      this.tags = [];
+      this.formOperations.getControl(this.editNoteForm, inputName).setValue('');
+      this.editedNoteTagsArr = [];
     })
   }
 
-  checkTags (): string[] {
-    let oldTagsArr = this.initialTagsValue.trim().split('#').map((tag) => {
-      tag.trim();
-      return tag.trim()
-    });
-    oldTagsArr.splice(0, 1);
-  
-    let newTags: string = this.fo.getControl(this.editNoteForm, 'allTags').value;
-    let newTagsArr = newTags.trim().split('#').map((tag) => {
-      tag.trim();
-      return tag.trim()
-    });
-    newTagsArr.splice(0, 1);
-
-    oldTagsArr.forEach((tag) => {
-      console.log('delete: ', tag);
-      
+  deleteOldTags(): void {
+    const oldTagsArr = this.makeTagsArr(this.initialTagsString);
+    oldTagsArr.forEach((tag) => {      
       if(noteTags.has(tag) && noteTags.get(tag)) {
-        let tagCount = noteTags.get(tag) as number;
-
-        if(tagCount > 1) {
-          noteTags.set(tag, tagCount - 1)
-        } else {
-          noteTags.delete(tag)
-        }
+        const tagCount = noteTags.get(tag) as number;
+        (tagCount > 1) ? noteTags.set(tag, tagCount - 1) : noteTags.delete(tag);
       }
-
-      console.log(noteTags);
     })
+  }
 
+  setNewTags(newTagsArr: string[]): void {
     newTagsArr.forEach((tag) => {
-      console.log('add: ', tag);
-
-      if(noteTags.has(tag) && noteTags.get(tag)) {
-        let tagCount = noteTags.get(tag) as number;
-        noteTags.set(tag, tagCount + 1)
-      } else {
-        noteTags.set(tag, 1);
-      }
-
-      console.log(noteTags);
+      const tagCount = noteTags.get(tag);
+      tagCount ? noteTags.set(tag, tagCount + 1) : noteTags.set(tag, 1);
     })
+  }
 
-    return newTagsArr;
+  makeTagsString(): string {
+    let tagsString = '';
+
+    this.editedNote!.allTags.forEach((tag) => {
+      if(tag) {
+        tagsString = tagsString + `#${tag} `;
+      }
+    });
+
+    tagsString.trim();
+    this.initialTagsString = tagsString;
+
+    return tagsString;
+  }
+
+  private makeTagsArr(tagString: string): string[] {
+    let tagsArr = tagString.split('#').map((tag) => {
+      return tag.trim()
+    });
+    tagsArr.splice(0,1);
+
+    return tagsArr;
   }
 
 }

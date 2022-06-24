@@ -10,7 +10,9 @@ import { ArrayOperationsService } from '../array-operations.service';
 export class DeletedNotesComponent implements OnInit {
   notes: Note[] = []
 
-  constructor(private arrOperation: ArrayOperationsService) { }
+  constructor(
+    private arrOperation: ArrayOperationsService
+  ) {}
 
   ngOnInit(): void {
     this.notes = deletedNotes;
@@ -21,14 +23,11 @@ export class DeletedNotesComponent implements OnInit {
   }
 
   permDelete(note: Note) {
-    console.log('to delete: ', note);
-    
-    let deletedNote = this.arrOperation.splice(note, this.notes);
-    console.log('deleted note: ', deletedNote);
-    
-
+    // let deletedNote = this.arrOperation.splice(note, this.notes);
+    this.arrOperation.splice(note, this.notes);
     let tagsArr = note.allTags;
-    tagsArr.forEach((tag) => {
+
+    for( let tag of tagsArr ) {
       let notesWithTag = noteTags.get(tag);
 
       if(notesWithTag === 1) {
@@ -37,10 +36,17 @@ export class DeletedNotesComponent implements OnInit {
         notesWithTag!--
         noteTags.set(tag, notesWithTag!) 
       }
-      
-    })
-    console.log(noteTags);
-    console.log('notes now: ', this.notes);
+    }
     
+    // tagsArr.forEach((tag) => {
+    //   let notesWithTag = noteTags.get(tag);
+
+    //   if(notesWithTag === 1) {
+    //     noteTags.delete(tag);
+    //   } else {
+    //     notesWithTag!--
+    //     noteTags.set(tag, notesWithTag!) 
+    //   }
+    // })
   }
 }
