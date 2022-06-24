@@ -6,6 +6,7 @@ import { MyNotesComponent } from './my-notes/my-notes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { DeletedNotesComponent } from './deleted-notes/deleted-notes.component';
 import { EditNoteComponent } from './edit-note/edit-note.component';
+import { ToDoComponent } from './todo/todo.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,11 @@ const routes: Routes = [
     // loadChildren: () => import
     component: DeletedNotesComponent,
     //title: 'My Notes',
+  },
+  {
+    path: 'todo',
+    component: ToDoComponent,
+    //title: 'Not Found',
   },
   {
     path: '',

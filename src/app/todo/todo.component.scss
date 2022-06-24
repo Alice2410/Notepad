@@ -1,0 +1,43 @@
+.todo {
+  margin: 0;
+  margin-top: 50px;
+  background-color: #DAEAF1;
+  border: #A5BECC 2px solid;
+  border-radius: 35px;
+  padding: 20px;
+  width: auto;
+}
+
+.id {
+  padding: 0;
+  margin: 0;
+}
+
+.todo-label {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.todo-checkbox {
+  margin-right: 10px;
+}
+
+.todos_list{
+  padding: 0;
+  margin: 0;
+  margin-bottom: 50px;
+  list-style: none;
+}
+
+.pagination-button {
+  padding: 5px;
+  margin-right: 20px;
+  border-radius: 25px;
+  border: #A5BECC 2px solid;
+}
+
+.buttons-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

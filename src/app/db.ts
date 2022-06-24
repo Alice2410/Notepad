@@ -18,3 +18,10 @@ export const controlsNames = {
   tag: 'tag',
   allTags: 'allTags',
 }
+
+export interface ToDo {
+  userId: number,
+  id: number,
+  title: string,
+  completed: boolean
+}

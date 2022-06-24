@@ -1,0 +1,19 @@
+<h1>{{ title }}</h1>
+
+<div class="todos">
+  <ul class="todos_list">
+    <li class="todos_listitem" *ngFor="let toDo of $any(posts$ | async | slice:showFrom:showFrom + countOnPage)">
+      <div class="todo">
+        <input type="checkbox" [checked]="toDo.completed" id="note" class="todo-checkbox">
+        <label for="note" class="todo-label">{{toDo.title}}</label>
+        <p class="id">Id: {{ toDo.id }}</p>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="buttons-wrapper">
+  <button (click)="showPrev()" [disabled]="checkBack()" class="pagination-button">Back</button>
+  <button (click)="showNext()" [disabled]="checkNext()" class="pagination-button">Next</button>
+</div>
+
